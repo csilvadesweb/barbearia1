@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planner Diário - App Interativo</title>
+    <title>Planner Diário - PWA</title>
+
+    <meta name="theme-color" content="#1e3a8a">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#1e3a8a">
+    <link rel="manifest" href="data:application/json;base64,eyJpY29ucyI6W3sic2l6ZXMiOiI2NHg2NCIsImNyZXRlZCI6IjIwMjEtMTAtMjZUMjA6NTI6NDcuMTY3WjAiLCJuYW1lIjoicGxhbm5lciIsInNyYyI6Ii9hcGlzL3BsYW5uZXIuaWNvbi5wbmciLCJkb20iOiIiLCJkaXNwIjp0cnVlLCJzdXByZW1lZHZpc2VkIjp0cnVlfV0sIm5hbWUiOiJQbGFubmVyIiwic2hvcnRfbmFtZSI6IlBsYW5uZXIgRGkg4dEiYWdvIiwic3RhcnRfdXJsIjoiL2FwaXMvcmVkaXJlY3QvYmFzZS8iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMTUzYzhhIn0=">
+
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -256,10 +261,19 @@
     </div>
 
     <script>
+        // Registra o Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:application/javascript;base64,IyBWZXJzaW9uIDAuMDEgICAgCnZhciBjYWNoZU5hbWUgPSAncGxhbm5lci12MC4wMSc7CnZhciBmaWxlc1RvQ2FjaGUgPSBbCiAgICAnLicsCiAgICAnL2luZGV4Lmh0bWwnCl07CnNlbGYuYWRkRXZlbnRMaXN0ZW5lciwnZmV0Y2gnLCAoZXZlbnQpPT57CgogICAgZXZlbnQucmVzcG9uZFdpdGgoCiAgICAgICAgY2FjaGVzLm1hdGNoKGV2ZW50LnJlcXVlc3QpLnRoZW4oKHJlc3BvbnNlKTw9PntuZXcgUmVzcG9uc2UoJ3Jlc3BvbnNlIik7fSkpOwoKfSk7')
+                .then(registration => {
+                    console.log('Service Worker registrado com sucesso:', registration);
+                })
+                .catch(error => {
+                    console.error('Falha no registro do Service Worker:', error);
+                });
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const checkboxes = document.querySelectorAll('.checkbox');
-
-            // Carrega o estado salvo
             const savedState = JSON.parse(localStorage.getItem('plannerProgress')) || {};
             
             checkboxes.forEach(checkbox => {
@@ -267,12 +281,10 @@
                 const task = checkbox.closest('li').dataset.task;
                 const key = `${day}-${task}`;
 
-                // Marca o checkbox se ele estiver salvo
                 if (savedState[key]) {
                     checkbox.checked = true;
                 }
 
-                // Salva o estado quando o checkbox é alterado
                 checkbox.addEventListener('change', () => {
                     if (checkbox.checked) {
                         savedState[key] = true;
